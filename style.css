@@ -1,0 +1,20 @@
+/*
+Theme Name: Shabashka WP-theme
+Theme URI: http://www.shabashka.online/
+Author: Noname
+Author URI: http://www.shabashka.online/
+Description: Shabashka is a modernized take on an ever-popular Bootstrap layout
+Version: 1.1
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Tags: black, blue, gray, red, white, yellow, dark, light, one-column, two-columns, right-sidebar, fixed-layout, responsive-layout, accessibility-ready, custom-background, custom-colors, custom-header, custom-menu, editor-style, featured-images, flexible-header, microformats, post-formats, rtl-language-support, sticky-post, threaded-comments, translation-ready
+Text Domain: shabashka.online
+*/
+
+html,body{}
+
+.site-header{
+    display: block;
+    height: 210px;
+    background: #f6dc7f url(./imgs/hdr-bg.png) center center repeat-x;
+}
