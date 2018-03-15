@@ -11,3 +11,50 @@ Tags: black, blue, gray, red, white, yellow, dark, light, one-column, two-column
 Text Domain: shabashka.online
 */
 
+html,body{
+    margin:0;
+    padding:0;
+}
+
+.site-header{
+    display: block;
+    height: 208px;
+    background: #fff url('./imgs/hdr-bg.png') top center no-repeat;
+}
+
+.site-header .row{
+    height: 208px;
+}
+.site-header .logo{
+    background: transparent url('./imgs/logo.png') 0 38px no-repeat;
+}
+.site-header ul{
+    list-style-type: none;
+    padding:0;
+    margin: 26px 0 0 0;
+}
+.site-header ul li{
+    margin-top:8px;
+    padding: 0;
+    font-size:1rem;
+}
+
+.site-header .sh-go-sign{
+    color:#6d6d79;
+    padding-right: 42px;
+    background: transparent url('./imgs/arr-cycle-down.png') right center no-repeat;
+    height: 32px;
+    line-height: 32px;
+    font-weight: 600;
+}
+.site-header .sh-phone{
+    color:#000;
+    font-weight: 600;
+    font-size:1.25rem;
+}
+.site-header .btn{
+    color:#fff;
+    background: #ff4116;
+    border-radius: 0;
+    font-size:1.5rem;
+}
