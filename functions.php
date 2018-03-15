@@ -6,25 +6,33 @@
  * @since Shabashka 1.0
  */
 
+static $dojo = "1.13.0";
 remove_filter( 'the_content', 'wpautop' );
 
 function do_scripts() {
-    $dojo = "1.13.0";
+    global $dojo;
     wp_dequeue_script('jquery-masonry');
-    wp_register_script('dojo', 'http://ajax.googleapis.com/ajax/libs/dojo/'.$dojo.'/dojo/dojo.js',array(),$dojo);
+    wp_register_script('dojo', '//ajax.googleapis.com/ajax/libs/dojo/'.$dojo.'/dojo/dojo.js',array(),$dojo);
     wp_enqueue_script('dojo');
     wp_enqueue_style('bootstrap', '//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' );
 }
 add_action('wp_enqueue_scripts', 'do_scripts');
 
-function add_admin_scripts($hook) {
+function add_admin_scripts($hook){
 /*    
-    wp_register_script('adm_app', get_stylesheet_directory_uri().'/js/admin.js', array('jquery'));
-    wp_enqueue_script( 'adm_app?'.$hook );
+    if ("post-new.php" != $hook){
+        return;
+    }
  * 
  */
+    global $dojo;
+    wp_register_script('adm-dojo', '//ajax.googleapis.com/ajax/libs/dojo/'.$dojo.'/dojo/dojo.js', array(), $dojo, true);
+    wp_register_script('adm-adv', get_stylesheet_directory_uri(). '/js/admin.js',array('adm-dojo'),false,true);
+    wp_enqueue_script('adm-dojo');
+    wp_enqueue_script('adm-adv');
+    wp_enqueue_style('adm-soria', '//ajax.googleapis.com/ajax/libs/dojo/'.$dojo.'/dijit/themes/soria/soria.css' );
 }
-add_action( 'admin_enqueue_scripts', 'add_admin_scripts' );
+add_action( 'admin_enqueue_scripts', 'add_admin_scripts');
 
 
 require get_stylesheet_directory().'/inc/pg_widget.php';
@@ -81,13 +89,21 @@ function adv_fields_func($post){
     }
 ?>
     <input type="hidden" name="extra_fields_nonce" id="adv_extra_fields_nonce" value="<?php echo wp_create_nonce(__FILE__); ?>" />
-    <div class="adv-item">
+    <style type="text/css">
+        .adv-info{display:none;}
+        .adv-info label{display:block;margin-top: 1rem;}
+    </style>
+        
+    <div id="adv-info-pane" class="soria adv-info">
+        <h3>Местонахождение</h3>
         <label for="adv-city">Город</label>
-        <input id="adv-city" name="extra[city]" type="text" value="<?php echo $city;?>"/>
+        <div  data-dojo-type="dijit/form/FilteringSelect" id="adv-city" name="extra[city]" style="width:30rem;" value="<?php echo $city;?>" required></div>
+        <br />
         <label for="adv-dis">Район</label>
-        <input id="adv-dis" name="extra[district]" style="width:auto;min-width: 480px;" type="text" value="<?php echo $district;?>"/>
+        <div  data-dojo-type="dijit/form/FilteringSelect" id="adv-dis" name="extra[district]" style="width:30rem;" value="<?php echo $district;?>" required></div>
+        <br />
         <label for="adv-price">Стоимость</label>
-        <input id="adv-price" name="extra[price]" style="width:auto;min-width: 480px;" type="text" value="<?php echo $price;?>"/>
+        <input data-dojo-type="dijit/form/ValidationTextBox" id="adv-price" name="extra[price]" type="text" value="<?php echo $price;?>"  required/>
     </div>    
 <?php
 }
