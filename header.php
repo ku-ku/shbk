@@ -43,7 +43,9 @@
     <header role="site-header" class="site-header">
         <div class="container">
             <div class="row">
-                <div class="col-6 logo"></div>
+                <div class="col-6 site-logo">
+                    <a href="<?php echo esc_url( home_url( '/' ) );?>"><img src="<?php echo get_stylesheet_directory_uri();?>/imgs/logo.png" alt="eШабашка" /></a>
+                </div>
                 <div class="col-6 text-right">
                     <ul>
                         <li class="sh-go-sign">Вход и регистрация</li>

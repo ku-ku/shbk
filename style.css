@@ -25,9 +25,13 @@ html,body{
 .site-header .row{
     height: 208px;
 }
-.site-header .logo{
-    background: transparent url('./imgs/logo.png') 0 38px no-repeat;
+
+.site-header .site-logo a{
+    display: block;
+    margin-top: 38px;
+    text-decoration: none;
 }
+
 .site-header ul{
     list-style-type: none;
     padding:0;
