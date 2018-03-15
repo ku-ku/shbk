@@ -12,6 +12,9 @@
 <section class="footer">
     <div class="container">
         <footer id="colophon" class="row site-footer" role="contentinfo">
+            <div class="col" style="font-size:1.25rem;padding-top:0.5rem;">
+                2018&nbsp;&copy;&nbsp;еШабашка все права защищены
+            </div>
         </footer>
     </div>
 </section>        
