@@ -71,3 +71,114 @@ html,body{
     height: 90px;
     color: #fff;
 }
+
+
+.form-search-pane{
+    margin:2px 0 1rem 0;
+}
+
+.form-search-pane .col{
+    white-space: nowrap;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.form-search-pane label{
+    display: block;
+    height: 38px;
+    line-height: 38px;
+    border-right: 2px solid #ff4116;
+    margin: 0;
+}
+
+.form-search-pane .btn-primary{
+    color:#fff;
+    background-color: #ff4116;
+    border-radius: 0;
+    border-color:  #ff4116;
+}
+.form-search-pane .btn-primary:hover{
+    background-color: #d23512;
+    border-color:  #d23512;
+}
+
+.soria .form-search-pane .dijitSelect, 
+.soria .form-search-pane .dijitTextBox{
+    border: 0 none;
+    background: #fff none;
+    margin-left:0.5rem;
+    width:calc(100% - 1rem);
+}
+
+.soria .form-search-pane .dijitButtonNode{
+    border: 0 none;
+    background: #fff none;
+}
+.soria .form-search-pane .dijitArrowButtonInner{
+    width:13px;
+    background-position: 0 center;
+    background-image: url('./imgs/ico-arr-down.png');
+}
+.form-search-pane .btn-do-search{
+    width: 42px;
+    height: 38px;
+    background-image: url('./imgs/ico-search.png');
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+ .form-search-pane .btn-primary:disabled {
+    background-color: #ff6e4d;
+    border-color: #ff6e4d;
+}
+
+.soria .adv-dlg-cats .dijitDialogTitleBar{
+    color: #fff;
+    background-color: #ff4116;
+    background-image: none;
+}
+.soria .dijitDialog.adv-dlg-cats .dijitDialogTitle{
+    color: #fff;
+}
+
+.adv-dlg-cats ul{
+    list-style-type: none;
+    padding: 1rem;
+    margin: 0;
+}
+
+.adv-dlg-cats ul li{
+    cursor: pointer;
+    display: block;
+    padding: 0.25rem 0.5rem;
+    transition: all 0.115s ease-in;
+    border-bottom: 1px solid #fefefe;
+}
+
+.adv-dlg-cats ul li:hover{
+    color: #fff;
+    background-color: #ff4116;
+    border-bottom: 1px solid #d23512;
+}
+
+.form-search-pane .adv-cat-name{
+    color:#6d6d79;
+    padding: 0.5rem 0;
+}
+
+.adv-search-conte .card-img-top,
+.adv-search-conte .card{
+    border-radius: 0;
+    border: 0 none;
+}
+.adv-search-conte .card{
+    color: #4c4c4d;
+    background: #f3f3f3;
+}
+
+.adv-search-conte .adv-dt{
+    background:#e0dfdf;
+    margin: 0 -20px;
+    padding:0.25rem 20px;
+}
+.adv-search-conte .adv-price{
+    color:#ff4116;
+}

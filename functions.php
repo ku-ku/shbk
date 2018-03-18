@@ -12,15 +12,18 @@ remove_filter( 'the_content', 'wpautop' );
 function do_scripts() {
     global $dojo;
     wp_dequeue_script('jquery-masonry');
+    wp_enqueue_style('soria', '//ajax.googleapis.com/ajax/libs/dojo/'.$dojo.'/dijit/themes/soria/soria.css' );
+    wp_enqueue_style('bootstrap', '//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' );
     wp_register_script('dojo', '//ajax.googleapis.com/ajax/libs/dojo/'.$dojo.'/dojo/dojo.js',array(),$dojo);
     wp_enqueue_script('dojo');
-    wp_enqueue_style('bootstrap', '//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css' );
+    wp_register_script('adv', get_stylesheet_directory_uri().'/js/adv.js?v=1.0.3',array('dojo'));
+    wp_enqueue_script('adv');
 }
 add_action('wp_enqueue_scripts', 'do_scripts');
 
 
 function adv_admin_js() {
-    echo '<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.8/css/fontawesome.css" integrity="sha384-q3jl8XQu1OpdLgGFvNRnPdj5VIlCvgsDQTQB6owSOHWlAurxul7f+JpUOVdAiJ5P" crossorigin="anonymous">';
+    echo '<script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js" integrity="sha384-SlE991lGASHoBfWbelyBPLsUlwY1GwNDJo3jSJO04KZ33K2bwfV9YBauFfnzvynJ" crossorigin="anonymous"></script>';
     echo '<script type="text/javascript">
         dojoConfig = {
                 parseOnLoad: false,
@@ -166,8 +169,6 @@ function add_extra_fields_update( $post_id ){
 }
 add_action('save_post', 'add_extra_fields_update', 0);
 
-
-
 add_action('wp_ajax_info', 'adv_info_callback');
 add_action('wp_ajax_nopriv_info', 'adv_info_callback');
 function adv_info_callback(){
@@ -214,7 +215,45 @@ function adv_info_callback(){
     wp_die();    
 }       //adv_info_callback
 
-
+function adv_print(){
+    $args = array(
+        'post_type' => 'advs',
+        'post_status' => 'publish',
+        'posts_per_page' => 12
+    );
+    if (isset($_REQUEST["acat"])){
+        $args["cat"] = $_REQUEST["acat"];
+    }
+    $q = new WP_Query( $args );
+    $n = 0;
+    while ( $q->have_posts() ) {
+        if ( $n == 0){
+            echo '<div class="row">';
+        }
+        if ( $n % 4){
+            $n = 0;
+            echo '</div>';
+        }
+        echo '<div class="col-md-3 col-sm-12"><div class="card">';
+        $q->the_post();
+        $thumb_id = get_post_thumbnail_id( get_the_ID() );
+        $thumb = get_stylesheet_directory_uri(). "/imgs/adv-def-image.png";
+        if ( $thumb_id ){
+            $thumb = wp_get_attachment_image_url( $thumb_id, 'post-thumbnail');
+        }
+        $price = get_post_meta( get_the_ID(),  'price', true );
+        echo '<img class="card-img-top" src="' . $thumb .'" alt="' . get_the_title(). '"/>';
+        echo '<div class="card-body"><h5 class="card-title">'.get_the_title().'</h5>';
+        echo '<div class="card-text">' .get_the_content() 
+             . '<div class="adv-price">' . $price . '</div>'
+             . '<div class="adv-dt">'.get_the_date().'</div></div>';
+        echo '</div></div>';
+    }
+    if ($n != 0){
+        echo '</div>';//.row
+    }
+    wp_reset_postdata();    
+}   //adv_print
 
 /*
 add_action('manage_shop_posts_custom_column',  'add_show_shop_columns', 10, 2);
