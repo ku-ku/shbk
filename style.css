@@ -118,6 +118,12 @@ html,body{
     background-position: 0 center;
     background-image: url('./imgs/ico-arr-down.png');
 }
+.soria .dijitMenuPassive .dijitMenuItemHover,
+.soria .dijitComboBoxMenu .dijitMenuItemHover,
+.soria .dijitMenuItemSelected {
+    background-color: #fff9c4 !important;
+}
+
 .form-search-pane .btn-do-search{
     width: 42px;
     height: 38px;
@@ -174,6 +180,10 @@ html,body{
     background: #f3f3f3;
 }
 
+.adv-search-conte .card-body{
+    padding-bottom: 0 !important;
+}
+
 .adv-search-conte .adv-dt{
     background:#e0dfdf;
     margin: 0 -20px;
@@ -181,4 +191,25 @@ html,body{
 }
 .adv-search-conte .adv-price{
     color:#ff4116;
+}
+
+.adv-search-conte .card-buttons{
+    margin:2px -20px 0 -20px;
+    padding:2px;
+    background: #959595;
+}
+
+.adv-search-conte .card-buttons >*{
+    padding:0;
+}
+
+.adv-search-conte .btn,
+.adv-search-conte .btn-sm{
+    border-radius: 0;
+}
+
+.adv-search-conte .card-buttons .btn-call{}
+.adv-search-conte .card-buttons .btn-write{
+    background:#fff; 
+    color: #4c4c4d !important;
 }

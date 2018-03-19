@@ -224,33 +224,56 @@ function adv_print(){
     if (isset($_REQUEST["acat"])){
         $args["cat"] = $_REQUEST["acat"];
     }
-    $q = new WP_Query( $args );
-    $n = 0;
-    while ( $q->have_posts() ) {
-        if ( $n == 0){
-            echo '<div class="row">';
-        }
-        if ( $n % 4){
-            $n = 0;
-            echo '</div>';
-        }
-        echo '<div class="col-md-3 col-sm-12"><div class="card">';
-        $q->the_post();
-        $thumb_id = get_post_thumbnail_id( get_the_ID() );
-        $thumb = get_stylesheet_directory_uri(). "/imgs/adv-def-image.png";
-        if ( $thumb_id ){
-            $thumb = wp_get_attachment_image_url( $thumb_id, 'post-thumbnail');
-        }
-        $price = get_post_meta( get_the_ID(),  'price', true );
-        echo '<img class="card-img-top" src="' . $thumb .'" alt="' . get_the_title(). '"/>';
-        echo '<div class="card-body"><h5 class="card-title">'.get_the_title().'</h5>';
-        echo '<div class="card-text">' .get_the_content() 
-             . '<div class="adv-price">' . $price . '</div>'
-             . '<div class="adv-dt">'.get_the_date().'</div></div>';
-        echo '</div></div>';
+    if (isset($_REQUEST["ad"])){
+        $args['meta_query'] = array(
+            'relation' => 'and',
+            'state_clause' => array('key' => 'district','value' => $_REQUEST["ad"])
+        );
+    } else if (isset($_REQUEST["ac"])){
+        $args['meta_query'] = array(
+            'relation' => 'and',
+            'state_clause' => array('key' => 'city','value' => $_REQUEST["ac"])
+        );
     }
-    if ($n != 0){
-        echo '</div>';//.row
+    
+    $n = 0;
+    $q = new WP_Query( $args );
+    if ( $q->have_posts() ) {
+        while ( $q->have_posts() ) {
+            if ( $n == 0){
+                echo '<div class="row">';
+            }
+            if ( $n % 4){
+                $n = 0;
+                echo '</div>';
+            }
+            echo '<div class="col-md-3 col-sm-12"'. ( ($n==0) ? ' style="padding-left:0;"' : '').'><div class="card">';
+            $q->the_post();
+            $postId = get_the_ID();
+            $thumb_id = get_post_thumbnail_id( $postId );
+            $thumb = get_stylesheet_directory_uri(). "/imgs/adv-def-image.png";
+            if ( $thumb_id ){
+                $thumb = wp_get_attachment_image_url( $thumb_id, 'post-thumbnail');
+            }
+            $price = get_post_meta( $postId,  'price', true );
+            $city = get_post_meta( $postId,  'city', true );
+            $district = get_post_meta( $postId,  'district', true );
+            $place = get_term_by( 'id', ($district) ? $district : $city, 'category'); //TODO: optimize
+            echo '<img class="card-img-top" src="' . $thumb .'" alt="' . get_the_title(). '"/>';
+            echo '<div class="card-body"><h5 class="card-title">'.get_the_title().'</h5>';
+            echo '<div class="card-text">' .get_the_content() 
+                 . ( ($place) ? '<div class="adv-place">'. $place->name . '</div>' : '')
+                 . '<div class="adv-price">' . $price . '</div>'
+                 . '<div class="adv-dt">'.get_the_date().'</div></div>'
+                 . '<div class="row card-buttons"><div class="col-6"><button class="btn btn-secondary btn-sm btn-block btn-call">Позвонить</button></div>'
+                 . '<div class="col-6"><button class="btn btn-secondary btn-sm btn-block btn-write">Написать</button></div>'
+                 . '</div></div>';
+        }
+        if ($n != 0){
+            echo '</div>';//.row
+        }
+    } else {
+        echo '<div class="alert alert-warning" role="alert"><i class="fas fa-exclamation-triangle"></i>&nbsp;По заданным Вами критериям ничего на найдено. Попробуйте изменить условия и выполнить поиск заново.</div>';
     }
     wp_reset_postdata();    
 }   //adv_print

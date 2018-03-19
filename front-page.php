@@ -7,6 +7,7 @@
  */
     get_header();
     $city = $_REQUEST["ac"];
+    $distr= $_REQUEST["ad"];
     $acat = $_REQUEST["acat"];
 ?>
 <div class="container">
@@ -29,13 +30,14 @@
                          data-dojo-type="dijit/form/FilteringSelect" name="ac" 
                          data-dojo-props="store:adv.stories.cities"
                          placeholder="Город"
-                         value="<?php echo $city;?>" ></div>
+                         value="<?php echo $city;?>"></div>
                 </div>    
                 <div class="align-self-center" style="width:19%;">
                     <div id="adv-dis" 
                          data-dojo-type="dijit/form/FilteringSelect" name="ad" 
                          data-dojo-props="store:adv.stories.dstrc,required:false"
-                         placeholder="Район"></div>
+                         placeholder="Район"
+                         value="<?php echo $distr;?>"></div>
                 </div>
                 <div class="text-right align-self-center" style="min-width:42px;padding-right:0;">
                     <button class="btn btn-primary btn-do-search" id="btn-do-search" disabled></button>
