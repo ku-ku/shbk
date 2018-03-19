@@ -7,4 +7,10 @@ require([   "dojo/dom",
             search.init(sp);
         });
     }
+    var ap = dom.byId("form-adv-pane");
+    if (ap){
+        require(["shbk/adv-form"], function(advForm){
+            advForm.init(ap);
+        });
+    }
 });

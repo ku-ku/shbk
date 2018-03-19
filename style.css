@@ -213,3 +213,29 @@ html,body{
     background:#fff; 
     color: #4c4c4d !important;
 }
+
+.form-adv-pane{
+    font-size: 0.88rem;
+}
+.form-adv-pane .adv-contacts{
+    background: #faf9f9;
+    border: 2px solid #c6c6c6;
+    padding: 24px;
+}
+
+.form-adv-pane .form-control{
+    border-radius: 0;
+}
+.soria .form-adv-pane .dijitSelect, 
+.soria .form-adv-pane .dijitTextBox, 
+.soria .form-adv-pane .dijitTextArea {
+    border: 1px solid #6e6e6e;
+}
+.soria .form-adv-pane .dijitFocused{
+    border-color:#d23512;
+}
+.soria .form-adv-pane .adv-contacts .dijitTextBox{
+    border-top: 0 none;
+    border-left: 0 none;
+    border-right: 0 none;
+}

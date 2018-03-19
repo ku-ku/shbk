@@ -49,7 +49,7 @@
                     <ul>
                         <li class="sh-go-sign">Вход и регистрация</li>
                         <li class="sh-phone">8&nbsp;800&nbsp;000&nbsp;00&nbsp;00</li>
-                        <li class="sh-go-rq"><button class="btn">ПОДАТЬ ШАБАШКУ</button></li>
+                        <li class="sh-go-rq"><a class="btn" href="/adv-form">ПОДАТЬ ШАБАШКУ</a></li>
                     </ul>
                 </div>
             </div>
