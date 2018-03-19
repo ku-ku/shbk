@@ -19,8 +19,15 @@
                     <div class="form-group row" style="margin-left:0;margin-right:0">
                         <div class="adv-contacts">
                             <div class="row">
-                                <div class="col-6"><h5>КОНТАКТНАЯ ИНФОРМАЦИЯ</h5></div>
-                                <div class="col-6">РАЗРЕШИТЬ СООБЩЕНИЯ</div>
+                                <div class="col-6"><h6 style="margin-top:5px;">КОНТАКТНАЯ ИНФОРМАЦИЯ</h6></div>
+                                <div class="col-6"><h6 style="font-weight:400;">РАЗРЕШИТЬ СООБЩЕНИЯ
+                                                   <label class="switch switch-flat">
+                                                        <input class="switch-input" type="checkbox" />
+                                                        <span class="switch-label" data-on="On" data-off="Off"></span> 
+                                                        <span class="switch-handle"></span>
+                                                    </label>
+                                                    </h6>
+                                </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-4">
