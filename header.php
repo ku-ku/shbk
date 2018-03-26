@@ -34,7 +34,11 @@
                 packages:[{name: 'shbk', location: _l + '/js'}]
         };
     </script>
-    <?php wp_head();?>
+    <?php 
+        wp_head();
+        $user = wp_get_current_user();
+    ?>
+    
 </head>
 
 <body <?php body_class("soria".(is_front_page() ? " front" : ""));?> data-spy="scroll">
@@ -47,7 +51,12 @@
                 </div>
                 <div class="col-6 text-right">
                     <ul>
-                        <li class="sh-go-sign">Вход и регистрация</li>
+                        <li class="sh-go-sign"><?php 
+                            if ($user->ID>0){
+                                echo '<a href="'.esc_url( home_url( '/wp-admin/profile.php' ) ).'">'.$user->first_name.'</a>';
+                            } else {
+                                echo '<a href="'.esc_url( home_url( '/wp-login.php' ) ).'">Вход и регистрация</a>';
+                            }?></li>
                         <li class="sh-phone">8&nbsp;800&nbsp;000&nbsp;00&nbsp;00</li>
                         <li class="sh-go-rq"><a class="btn" href="/adv-form">ПОДАТЬ ШАБАШКУ</a></li>
                     </ul>

@@ -7,10 +7,10 @@ require([   "dojo/dom",
             search.init(sp);
         });
     }
-    var ap = dom.byId("form-adv-pane");
-    if (ap){
+    var ca = dom.byId("conte-adv");
+    if (ca){
         require(["shbk/adv-form"], function(advForm){
-            advForm.init(ap);
+            advForm.init(ca);
         });
     }
 });

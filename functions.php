@@ -62,7 +62,11 @@ add_action( 'widgets_init', function(){
 });
  
 
-function add_post_types(){
+function adv_init(){
+    add_theme_support('post-thumbnails');
+    add_image_size('adv-thumb', 262, 182);
+    add_image_size('adv-middle', 386,328);
+    
     $labels = array(
         'name' => 'ШАБАШКА',
         'singular_name' => 'ШАБАШКА',
@@ -100,7 +104,7 @@ function add_post_types(){
     register_post_type( 'advs', $args );
     
 }
-add_action('init', 'add_post_types');
+add_action('init', 'adv_init');
 
 function adv_fields_func($post){
     if (!($post->post_status=="auto-draft")){
@@ -169,6 +173,61 @@ function add_extra_fields_update( $post_id ){
 }
 add_action('save_post', 'add_extra_fields_update', 0);
 
+function doAdvWrite($postId){
+    $post = get_post($postId);
+    if ($post){
+        if ($_SERVER['REQUEST_METHOD'] === 'POST'){
+            $res = new stdClass();
+            $user = get_current_user();
+            if ( 0 == $user->ID ){
+                $res->err=-1;
+                $res->msg='User is`t authorized';
+            } else {
+                $data = array(
+                    'comment_post_ID' => $post->ID, // to which post the comment will show up
+                    'comment_content' => $_POST["msg"],
+                    'user_id' => $user->ID
+                );
+                $comment_id = wp_new_comment( $data );
+                $res->commId = $comment_id;
+                $res->err = is_wp_error($comment_id) ? 1 : 0;
+            } 
+            echo json_encode($res);
+            
+        } else {
+            $user = get_user_by('ID', $post->post_author);
+            echo '<h4>'.$post->post_title.'</h4>';
+            echo '<p>Сообщение для '.$user->display_name.'</p>';
+            echo '<textarea data-dojo-type="dijit/form/SimpleTextarea" name="msg" 
+                            data-dojo-props="required:true"
+                            required placeholder="Сообщение" class="form-control" style="width:100%;"></textarea>';
+            echo '<div style="padding:1rem;margin-top:1rem;text-align:right;" class="btn-group d-block">'
+               . '<button class="btn btn-outline-primary btn-sm btn-send"><i class="fas fa-paper-plane"></i>&nbsp;Отправить</button>'
+               . '<button class="btn btn-outline-primary btn-sm btn-close"><i class="far fa-times-circle"></i>&nbsp;Закрыть</div>';
+        }
+    } else {
+        echo '<div class="alert alert-danger" role="alert">К сожалению по Вашему запросу ничего не найдено</div>';
+    }
+    
+}   //doAdvWrite
+function doAdvCallInfo($postId){
+    $post = get_post($postId);
+    if ($post){
+        echo '<h4>'.$post->post_title.'</h4>';
+        $user = get_user_by('ID', $post->post_author);
+        //var_dump($user);
+        $tel  = get_user_meta($post->post_author,'phone');
+        if (empty($tel)){
+            echo '<p>К сожалению пользователь '.$user->display_name.' не оставил телефон для связи.</p>';
+        } else{
+            echo '<p>Вы можете связаться по телефону '. $tel .', '.$user->display_name.'</p>';
+        }
+    } else {
+        echo '<div class="alert alert-danger" role="alert">К сожалению по Вашему запросу ничего не найдено</div>';
+    }
+    echo '<div style="padding:1rem;margin-top:1rem;text-align:right;"><button class="btn btn-outline-primary btn-sm btn-close"><i class="far fa-times-circle"></i>&nbsp;Закрыть</button></div>';
+}   //doAdvCallInfo
+
 add_action('wp_ajax_info', 'adv_info_callback');
 add_action('wp_ajax_nopriv_info', 'adv_info_callback');
 function adv_info_callback(){
@@ -187,33 +246,198 @@ function adv_info_callback(){
             $cat = get_category_by_slug("adverts");
             $cat = ($cat) ? $cat->cat_ID : -1;
             break;
+        case "call":
+            doAdvCallInfo($_REQUEST["id"]);
+            break;
+        case "write":
+            doAdvWrite($_REQUEST["id"]);
+            break;
     }
     
-    $childs = get_terms( array(
-        'taxonomy' => 'category',
-        'parent'   => $cat,
-        'childless'=> false,
-        'orderby'  => 'name',
-        'hierarchical' => false,
-        'hide_empty' => false) );
-            
-            
-    //get_term_children( $cat, 'category');
-    $items  =  array();
-    foreach($childs as $cat){
-        $item = new stdClass();
-        $item->id = $cat->term_id;
-        $item->name = $cat->name;
-        $items[] = $item;
+    if ($cat){
+        $childs = get_terms( array(
+            'taxonomy' => 'category',
+            'parent'   => $cat,
+            'childless'=> false,
+            'orderby'  => 'name',
+            'hierarchical' => false,
+            'hide_empty' => false) );
+
+
+        //get_term_children( $cat, 'category');
+        $items  =  array();
+        foreach($childs as $cat){
+            $item = new stdClass();
+            $item->id = $cat->term_id;
+            $item->name = $cat->name;
+            $items[] = $item;
+        }
+
+        $root = new stdClass();
+        $root->identifier = 'id';
+        $root->label = 'name';
+        $root->items = $items;
+        echo json_encode($root);
     }
-    
-    $root = new stdClass();
-    $root->identifier = 'id';
-    $root->label = 'name';
-    $root->items = $items;
-    echo json_encode($root);
-    wp_die();    
+    wp_die();
 }       //adv_info_callback
+
+
+function get_in_translate($string){
+    $arStrES = array("ае","уе","ое","ые","ие","эе","яе","юе","ёе","ее","ье","ъе","ый","ий");
+    $arStrOS = array("аё","уё","оё","ыё","иё","эё","яё","юё","ёё","её","ьё","ъё","ый","ий");        
+    $arStrRS = array("а$","у$","о$","ы$","и$","э$","я$","ю$","ё$","е$","ь$","ъ$","@","@");
+                    
+    $replace = array("А"=>"A","а"=>"a","Б"=>"B","б"=>"b","В"=>"V","в"=>"v","Г"=>"G","г"=>"g","Д"=>"D","д"=>"d",
+                "Е"=>"Ye","е"=>"e","Ё"=>"Ye","ё"=>"e","Ж"=>"Zh","ж"=>"zh","З"=>"Z","з"=>"z","И"=>"I","и"=>"i",
+                "Й"=>"Y","й"=>"y","К"=>"K","к"=>"k","Л"=>"L","л"=>"l","М"=>"M","м"=>"m","Н"=>"N","н"=>"n",
+                "О"=>"O","о"=>"o","П"=>"P","п"=>"p","Р"=>"R","р"=>"r","С"=>"S","с"=>"s","Т"=>"T","т"=>"t",
+                "У"=>"U","у"=>"u","Ф"=>"F","ф"=>"f","Х"=>"Kh","х"=>"kh","Ц"=>"Ts","ц"=>"ts","Ч"=>"Ch","ч"=>"ch",
+                "Ш"=>"Sh","ш"=>"sh","Щ"=>"Shch","щ"=>"shch","Ъ"=>"","ъ"=>"","Ы"=>"Y","ы"=>"y","Ь"=>"","ь"=>"",
+                "Э"=>"E","э"=>"e","Ю"=>"Yu","ю"=>"yu","Я"=>"Ya","я"=>"ya","@"=>"y","$"=>"ye");
+                
+    $string = str_replace($arStrES, $arStrRS, $string);
+    $string = str_replace($arStrOS, $arStrRS, $string);
+        
+    return iconv("UTF-8","UTF-8//IGNORE",strtr($string,$replace));
+}       //get_in_translate
+
+
+function adv_get_user($usi){
+    $us = get_user_by('email', $usi->eml);
+    if ($us) {
+        if (strcasecmp($us->get('first_name'), $usi->name)==0){
+            return $us; //TODO:
+        } else {
+            return new WP_Error('existing_user_email', 'This e-mail already exist by another user'); 
+        }
+    }
+    
+    $login = $usi->eml; //get_in_translate($usi->name);  //TODO:!
+    $pw = wp_generate_password(12);
+    $args = array(
+        'user_login'=>$login,
+        'user_pass'=>$pw,
+        'user_email'=>$usi->eml,
+        'display_name'=>$usi->name,
+        'first_name'=>$usi->name,
+        'role' => 'author'    
+    );
+    $userId = wp_insert_user($args);
+    if ( is_wp_error($userId) ){
+        return $userId;
+    }
+    if (strlen($usi->tel)>0){
+        update_user_meta($userId, 'phone', $usi->tel);
+    }    
+    wp_new_user_notification( $userId, null, 'both');
+    $creds = array (
+	'user_login'    => $login,
+	'user_password' => $pw,
+	'remember'      => true
+    );
+    wp_signon( $creds, false);
+    
+    return $userId;
+   
+}       //adv_get_user
+
+function adv_save_adv(){
+    $authorId;
+    $cuser = wp_get_current_user();
+    $res = new stdClass();
+    if ( 0 == $cuser->ID ){
+        $usi = new stdClass();
+        $usi->name = $_REQUEST["name"];
+        $usi->eml  = $_REQUEST["eml"];
+        $usi->tel  = $_REQUEST["tel"];
+        $cuser = adv_get_user($usi);
+        if ((!$cuser)||is_wp_error($cuser)){
+            $res->id=-1;
+            $res->err=1;
+            $res->msg="User ".$usi->name." (".$usi->eml.") can`t be registered";
+            if (is_wp_error($cuser)){
+                $res->msg .= ": ".$cuser->get_error_message();
+            }
+            echo json_encode($res);
+            wp_die();
+        }
+        $authorId = $cuser;
+    } else {
+        $authorId = $cuser->ID;
+    }
+    $res->userId = $authorId;
+    
+    $meta = array(
+        "city"=>$_REQUEST["city"],
+        "district"=>$_REQUEST["distr"],
+        "onmsg"=>$_REQUEST["onmsg"],
+        "price"=>$_REQUEST["pr"]
+    );
+    
+    $post = array(
+      'comment_status' => 'closed',
+      'ping_status' => 'closed',
+      'post_author' => $authorId,
+      'post_category' => array($_REQUEST["acat"]),
+      'post_content' => $_REQUEST["msg"],
+      'post_status' => 'pending',
+      'post_title' => $_REQUEST["tt"],
+      'post_type' => 'advs',
+      'ping_status' => get_option('default_ping_status'), 
+      'meta_input' => $meta
+    );
+    //TODO: ID for update
+    $postId = wp_insert_post($post);
+    if (is_wp_error($postId)){
+        $res->id=-1;
+        $res->err=1;
+        $res->msg="Can`t reg ADV: ". $postId->get_error_message();        
+    } else {
+        wp_set_post_categories( $postId, array($_REQUEST["acat"]), false );
+        $res->id = $postId;
+        $res->err= 0;
+        if(isset($_FILES)){
+            $res->files = $_FILES;
+            require_once( ABSPATH . 'wp-admin/includes/image.php' );
+            require_once( ABSPATH . 'wp-admin/includes/file.php' );
+            require_once( ABSPATH . 'wp-admin/includes/media.php' );
+            $res->thumbId = media_handle_upload('upload', $postId );
+            if (is_wp_error($res->thumbId)){
+                $res->errThumb = 1;
+                $res->errThumbMsg = $res->thumbId->get_error_message();
+            } else if ( set_post_thumbnail( $postId, $res->thumbId ) ){
+                $res->errThumb = 0;
+                $res->thumbUrl = wp_get_attachment_image_url($res->thumbId,'adv-middle'); //TODO: by resp-image
+            }
+        }
+    }
+    
+    echo json_encode($res);
+}       //adv_save_adv
+
+function adv_feedback_callback(){
+    $q = $_REQUEST["q"];
+    $nonce = $_REQUEST["nonce"];
+    if (!wp_verify_nonce( $nonce, 'ajax-nonce' )){
+        wp_send_json_error("Bad request");
+        wp_die();
+    }
+    
+    if (!isset($q)){
+        wp_send_json_error();
+    } else {
+        switch($q){
+            case "save-adv":
+                adv_save_adv();
+                break;
+        }
+    }
+    wp_die();
+}       //adv_feedback_callback
+add_action('wp_ajax_feedback', 'adv_feedback_callback');
+add_action('wp_ajax_nopriv_feedback', 'adv_feedback_callback');
+
 
 function adv_print(){
     $args = array(
@@ -243,17 +467,17 @@ function adv_print(){
             if ( $n == 0){
                 echo '<div class="row">';
             }
-            if ( $n % 4){
+            if ( ($n > 0) && ($n % 4) == 4){
                 $n = 0;
-                echo '</div>';
+                echo '</div><!--.row-->';
             }
-            echo '<div class="col-md-3 col-sm-12"'. ( ($n==0) ? ' style="padding-left:0;"' : '').'><div class="card">';
             $q->the_post();
             $postId = get_the_ID();
+            echo '<div class="col-md-3 col-sm-12"><div class="card" data-adv-id="' . $postId .'"><!--'.$n.'-->';
             $thumb_id = get_post_thumbnail_id( $postId );
             $thumb = get_stylesheet_directory_uri(). "/imgs/adv-def-image.png";
             if ( $thumb_id ){
-                $thumb = wp_get_attachment_image_url( $thumb_id, 'post-thumbnail');
+                $thumb = wp_get_attachment_image_url( $thumb_id, 'adv-thumb');
             }
             $price = get_post_meta( $postId,  'price', true );
             $city = get_post_meta( $postId,  'city', true );
@@ -261,13 +485,15 @@ function adv_print(){
             $place = get_term_by( 'id', ($district) ? $district : $city, 'category'); //TODO: optimize
             echo '<img class="card-img-top" src="' . $thumb .'" alt="' . get_the_title(). '"/>';
             echo '<div class="card-body"><h5 class="card-title">'.get_the_title().'</h5>';
-            echo '<div class="card-text">' .get_the_content() 
+            echo '<div class="card-text"><div class="adv-text">' .get_the_content() . '</div>'
                  . ( ($place) ? '<div class="adv-place">'. $place->name . '</div>' : '')
                  . '<div class="adv-price">' . $price . '</div>'
                  . '<div class="adv-dt">'.get_the_date().'</div></div>'
                  . '<div class="row card-buttons"><div class="col-6"><button class="btn btn-secondary btn-sm btn-block btn-call">Позвонить</button></div>'
                  . '<div class="col-6"><button class="btn btn-secondary btn-sm btn-block btn-write">Написать</button></div>'
-                 . '</div></div>';
+                 . '</div></div></div><!--.card-->'
+                 . '</div><!--.col-->';
+            $n++;
         }
         if ($n != 0){
             echo '</div>';//.row
